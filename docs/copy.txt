@@ -1,0 +1,80 @@
+   Search[ Advanced ]                    
+ 
+ 
+    
+  Personal 
+    
+  General 
+  Organizer 
+  Timesheets 
+  Account Settings 
+    
+    
+  Portfolio Management 
+    
+  Projects 
+    
+    
+  Resource Management 
+    
+  Resources 
+  Resource Finder 
+  Resource Requisitions 
+    
+    
+  Portlets (Custom) 
+    
+  Exchange Rate Converter 
+  Cost Center Explorer 
+  Global Recovery Calendar 
+    
+ 
+  Timesheet  
+ 
+ 
+ Processing your request... 
+ 
+Stop 
+ 
+Return TimesheetCancel [Printable Version] 
+ 
+   
+Time Period: 8/13/11 - 8/19/118/6/11 - 8/12/117/30/11 - 8/5/117/23/11 - 7/29/117/16/11 - 7/22/117/9/11 - 7/15/117/2/11 - 7/8/116/25/11 - 7/1/11   
+ 
+Resource Name Vinay X Lakkam 
+Timesheet Status Submitted 
+ Submitted by Vinay X Lakkam 
+Last Modified 7/13/11 4:14 AM 
+ 
+ 
+
+ Project ID Project Description Sat
+7/9
+ Sun
+7/10
+ Mon
+7/11
+ Tue
+7/12
+ Wed
+7/13
+ Thu
+7/14
+ Fri
+7/15
+ Total ETC Charge Code Parent Phase Baseline Role Task ID Input Type Code Short Name 
+Tasks 
+  PRJ0001I9V AXPI 2010-11 - Online Claims - Payments & Money Movement Build Tasks     8.00 8.00 8.00 8.00 8.00 40.00  40.00  Capital     0.00 Technical Lead   Offshore/Offsite   
+      Total 0.00 0.00 8.00 8.00 8.00 8.00 8.00 40.00                   
+
+  [Configure] 
+Return TimesheetCancel [Printable Version] 
+Work Effort = Hours   
+ 
+ 
+ 
+ 
+ 
+ 
+ Copyright © 2008 CA. All rights reserved. [ About ]  
+ 

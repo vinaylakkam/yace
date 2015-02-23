@@ -1,0 +1,35 @@
+yaceData = {
+	time:{
+		"weekStartDate":"xxx",
+		"status":"xxx",
+		"project":[
+			{
+			"projectId": "xxx",
+			"project":"xxx",
+			"projectDesc":"xxx",
+			"day1":"xxx",
+			"day2":"xxx",
+			"day3":"xxx",
+			"day4":"xxx",
+			"day5":"xxx",
+			"day6":"xxx",
+			"day7":"xxx",
+			"totHours":"xxx"
+			}
+		],
+		"totals":
+			{
+			"day1":"xxx",
+			"day2":"xxx",
+			"day3":"xxx",
+			"day4":"xxx",
+			"day5":"xxx",
+			"day6":"xxx",
+			"day7":"xxx",
+			"totHours":"xxx"
+		},
+	}
+	user:{
+		userId:"",
+	}
+}

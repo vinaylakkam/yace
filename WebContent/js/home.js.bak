@@ -1,0 +1,225 @@
+
+/* ClarityJSON object; Tobe filled up with data */
+
+$(document).ready(function() {
+	$("#done").click(function() {
+
+		alert("DONE..");
+
+		// get JSON object with data
+		var clarityJSON = getClarityJSON();
+		
+		if(clarityJSON) {
+
+			// Submit
+			$.postJSON("save", clarityJSON, function(data) {
+				alert("DONE DONE DONE DONE...")
+			});
+		}
+
+		return false;				
+	});
+
+});
+
+/* Updates JSON object with data from textarea*/
+getClarityJSON = function() {
+	
+	var prjktArray = new Array();
+	
+	var clarityJSON = {
+		timesheet: {},
+		timeEntry:[],
+		user:{}
+	};
+	
+ 	// Get textarea content
+	var content = document.getElementById('txt_cData').value;
+
+	// Get User Name
+	var nameStrtIndex = content.indexOf('Resource Name ');
+	var text = content.substring(nameStrtIndex+14);
+	var endLineIndex = text.indexOf('\n');
+	var resourceName = text.substring(0, endLineIndex);
+
+	// Get TimeSheet Status
+	var statusStrtIndex =  content.indexOf('Timesheet Status ');
+	var statusText = content.substring(statusStrtIndex+17);
+	endLineIndex = statusText.indexOf('\n');
+	var timeSheetStatus =  trim(statusText.substring(0,endLineIndex));
+	
+	clarityJSON.timesheet.status = timeSheetStatus;
+	clarityJSON.timesheet.clarityStatus = timeSheetStatus;
+
+	// Get WeekStartDate	
+	var dateIndex = content.indexOf('Project ID Project Description');
+	var datesArray = content.substring(dateIndex).split('\n');
+	var weekStrtDate = datesArray[1];	
+	clarityJSON.timesheet.weekStartDate = weekStrtDate; 
+
+	
+	// Get Last Modified Date 
+	dateIndex = content.indexOf('Last Modified ');
+	var dateText = content.substring(dateIndex+14);
+	endLineIndex = statusText.indexOf(' ');
+	var lastModifiedDate = dateText.substring(0,endLineIndex);
+	clarityJSON.timesheet.lastModifDate = trim(lastModifiedDate);
+	
+	// TODO: Find WeekStartDate
+
+	//Get Project Level Details
+	var prjktCount = 0;
+	text = content.substring(content.indexOf('PRJ'));
+	prjktArray = text.split('PRJ');
+
+	for(i=1;i<prjktArray.length;i++){
+		var hoursPerDayArray = new Array();
+		var PrjktHoursArray = new Array();
+		var dayObj = {};
+
+		var prjktText = prjktArray[i];
+		endLineIndex =  prjktText.indexOf('     ');
+		var hoursText = prjktText.substring(endLineIndex);
+		endLineIndex =  hoursText.indexOf('\n');
+		var prjktHoursText = hoursText.substring(0,endLineIndex);
+		//alert(prjktHoursText)
+		var nxtCharIndex = findNextAlphabetIndex(prjktHoursText);
+		var prjktHoursString = prjktHoursText.substring(0,nxtCharIndex);
+		prjktHoursString = trim(prjktHoursString);
+
+		PrjktHoursArray = prjktHoursString.split('  ');
+
+		// get No. of hours per Project for current week
+		var HoursPerProject = PrjktHoursArray[0];
+
+		// find no. of dots
+		var dotsCount = HoursPerProject.split(".").length - 1;
+
+		if(dotsCount > 1){
+			//Get Project Code
+			var prjktCodeEndIndex = prjktText.indexOf(' ');
+			var prjktCode = "PRJ"+prjktText.substring(0,prjktCodeEndIndex);
+
+			// Get project Desc
+			endLineIndex =  prjktText.indexOf('     ');
+			var prjktDesc = prjktText.substring(prjktCode.length-2,endLineIndex);
+			//alert("prjktDesc :"+prjktDesc)
+
+			hoursPerDayArray = HoursPerProject.split(' ');
+			//alert('hoursPerDayArray '+hoursPerDayArray.length)
+
+			var totHoursperProject = hoursPerDayArray[hoursPerDayArray.length-1];
+			clarityJSON.timeEntry[prjktCount] = new Object();
+			clarityJSON.timeEntry[prjktCount].projId = prjktCode;
+			clarityJSON.timeEntry[prjktCount].projName = prjktDesc;
+			clarityJSON.timeEntry[prjktCount].projDesc = prjktDesc;
+
+			// Populate hours per day values
+			clarityJSON.timeEntry[prjktCount].day1Hrs = 0.00;
+			clarityJSON.timeEntry[prjktCount].day2Hrs = 0.00;
+			var day =3;
+			while(day<hoursPerDayArray.length+2-1){
+
+				var dayName = "day"+day+"Hrs";
+				clarityJSON.timeEntry[prjktCount][dayName] = hoursPerDayArray[(day-2)-1];
+				day++;
+			}
+			
+			//clarityJSON.timeEntry[prjktCount].days= dayObj;
+			clarityJSON.timeEntry[prjktCount].totalHrs = hoursPerDayArray[hoursPerDayArray.length-1];
+			prjktCount++;
+		}
+	}
+	
+	//clarityJSON.user.userId = resourceName; // Clarity name; TODO: TBD
+
+	// Code for calculating total hours per week
+	var HoursPerWeekStr = content.substring(content.lastIndexOf('Total')+6);
+	endLineIndex =  HoursPerWeekStr.indexOf('\n');
+	var HoursPerWeekArray = trim(HoursPerWeekStr.substring(0,endLineIndex)).split(' ');
+	var totalWeeklyHours= HoursPerWeekArray[HoursPerWeekArray.length-1];
+	var totDay2DayHoursIndex = 2;
+	var totDay2DayHoursObj = {};
+	
+	clarityJSON.timesheet.day1Hrs = 0.00;
+	clarityJSON.timesheet.day2Hrs = 0.00;
+	                      
+	var totHoursIndex = 3;
+	while(totDay2DayHoursIndex<HoursPerWeekArray.length-1){
+		var day = "day"+totHoursIndex+"Hrs";
+		clarityJSON.timesheet[day] = HoursPerWeekArray[totDay2DayHoursIndex];
+		totHoursIndex++;
+		totDay2DayHoursIndex++;
+	}
+	clarityJSON.timesheet.totalHrs = totalWeeklyHours;
+
+	var jsonObj = JSON.stringify(clarityJSON, null, '\t');
+	alert(jsonObj);
+	
+	return clarityJSON; 
+}
+
+function findNextAlphabetIndex(content){
+	var regExp = /^[A-Za-z]$/;
+	for(var i = 0; i < content.length; i++){
+		if (content.charAt(i).match(regExp)) {
+			return i;
+		}
+	}
+}
+
+function trim(str) {
+    return str.replace(/^\s+|\s+$/g,"");
+}
+/*clarityJSON1 = {
+
+	timesheet:{
+		"weekStartDate":"2011-07-22",
+		"status":"Submitted",
+		"clarityStatus": "Submitted",
+		"lastModifDate": "2011-07-26",
+		"modifBy":268916,
+		"day1Hrs":8.00,
+		"day2Hrs":8,
+		"day3Hrs":8.00,
+		"day4Hrs":08.00,
+		"day5Hrs":08.00,
+		"day6Hrs":08.00,
+		"day7Hrs":08.00,
+		"totalHrs":40.00
+	},
+	timeEntry:[
+           {
+        	   "projId": "xxx",
+        	   "projName":"xxx",
+        	   "projDesc":"xxx",
+        	   "day1Hrs":8.00,
+        	   "day2Hrs":8.00,
+        	   "day3Hrs":8.00,
+        	   "day4Hrs":4.00,
+        	   "day5Hrs":4.00,
+        	   "day6Hrs":4.00,
+        	   "day7Hrs":4.00,
+        	   "totalHrs":24.00
+           },
+           {
+        	   "projId": "xxx",
+        	   "projName":"xxx",
+        	   "projDesc":"xxx",
+        	   "day1Hrs":0.00,
+        	   "day2Hrs":0.00,
+        	   "day3Hrs":0.00,
+        	   "day4Hrs":4.00,
+        	   "day5Hrs":4.00,
+        	   "day6Hrs":4.00,
+        	   "day7Hrs":4.00,
+        	   "totalHrs":16.00			
+           }
+     ],
+	user:{
+		"id":131,
+		"assoId":256723,
+		"systemIP":"xxx",
+		"role":"xxx"
+	}
+}*/
